@@ -4,13 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'airflow-dags/dags'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'airflow-dags/dags'
 
 jobs:
   build-and-test:
