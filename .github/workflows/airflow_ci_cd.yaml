@@ -6,6 +6,11 @@ on:
       - main
     paths:
       - 'airflow-dags/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'airflow-dags/**'
 
 jobs:
   build-and-test:
