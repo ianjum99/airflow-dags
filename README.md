@@ -1,4 +1,4 @@
-# Project Name
+# Airflow-dags
 > Brief project description - A concise overview of what the project does and its purpose, focusing on integrating Apache Airflow with GitHub Actions.
 
 ## Table of Contents
