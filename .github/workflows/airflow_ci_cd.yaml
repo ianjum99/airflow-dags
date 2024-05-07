@@ -25,22 +25,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-
+    
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
-
-    - name: Build Airflow Docker container
+    
+    - name: Build and start Airflow Docker containers
       run: docker-compose -f docker-compose.ci.yml up -d
-
-    - name: Install dependencies
-      run: pip install -r requirements.txt
-
+    
+    - name: Check Docker container statuses
+      run: docker ps -a
+    
+    - name: Fetch Docker container logs
+      run: docker logs airflow-dags_webserver_1 || true  # '|| true' ensures the workflow continues even if this command fails
+    
+    - name: Run Airflow DAG list command
+      run: docker exec -t airflow-dags_webserver_1 airflow dags list
+    
     - name: Run tests
-      run: |
-        docker exec -t airflow-dags_webserver_1 airflow dags list
-        pytest ./tests/
-
+      run: pytest ./tests/
+    
     - name: Cleanup
       run: docker-compose -f docker-compose.ci.yml down
