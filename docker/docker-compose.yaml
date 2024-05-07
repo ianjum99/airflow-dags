@@ -20,11 +20,21 @@ services:
       - LOAD_EX=n
       - EXECUTOR=Local
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__PARALLELISM=2
+      - AIRFLOW__CORE__DAG_CONCURRENCY=2
+      - AIRFLOW__WEBSERVER__WORKER_REFRESH_BATCH_SIZE=1
+      - AIRFLOW__WEBSERVER__WORKER_REFRESH_INTERVAL=1800
     ports:
       - "8080:8080"
     volumes:
       - ./dags:/opt/airflow/dags
     command: webserver
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 500M
 
   scheduler:
     image: apache/airflow:2.3.0
@@ -33,7 +43,16 @@ services:
     environment:
       - LOAD_EX=n
       - EXECUTOR=Local
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__PARALLELISM=2
+      - AIRFLOW__CORE__DAG_CONCURRENCY=2
+      - AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL=300
     volumes:
       - ./dags:/opt/airflow/dags
     command: scheduler
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 500M
