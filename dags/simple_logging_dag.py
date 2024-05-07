@@ -3,7 +3,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime, timedelta
 
-# Function to log a message
+
 def log_message():
     print("This is a test log from the simple_logging_dag.")
 
