@@ -6,27 +6,53 @@ services:
       - POSTGRES_USER=airflow
       - POSTGRES_PASSWORD=airflow
       - POSTGRES_DB=airflow
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   webserver:
     image: apache/airflow:2.3.0
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - LOAD_EX=n
       - EXECUTOR=Local
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__PARALLELISM=2
+      - AIRFLOW__CORE__DAG_CONCURRENCY=2
     volumes:
       - ./dags:/opt/airflow/dags
-    command: webserver
+    command: ["bash", "-c", "sleep 30 && airflow webserver"]
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 500M
 
   scheduler:
     image: apache/airflow:2.3.0
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - LOAD_EX=n
       - EXECUTOR=Local
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
     volumes:
       - ./dags:/opt/airflow/dags
-    command: scheduler
+    command: ["bash", "-c", "sleep 45 && airflow scheduler"]
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 500M
+
+volumes:
+  postgres_data:
