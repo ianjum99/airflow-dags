@@ -1,0 +1,33 @@
+name: Airflow CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'airflow-dags/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - name: Install dependencies
+      run: pip install -r airflow-dags/requirements.txt
+    - name: Run tests
+      run: pytest airflow-dags/tests/
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy DAGs
+      run: ./deploy_dags.sh
+      env:
+        AIRFLOW_WEB_SERVER: ${{ secrets.AIRFLOW_WEB_SERVER }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
