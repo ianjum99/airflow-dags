@@ -40,7 +40,7 @@ jobs:
     - name: Run tests
       run: |
         docker exec -t airflow-dags_webserver_1 airflow dags list
-        pytest airflow-dags/tests/
+        pytest ./tests/
 
     - name: Cleanup
       run: docker-compose -f docker-compose.ci.yml down
