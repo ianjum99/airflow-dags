@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'airflow-dags/**'
+      - 'airflow-dags/dags'
   pull_request:
     branches:
       - main
     paths:
-      - 'airflow-dags/**'
+      - 'airflow-dags/dags'
 
 jobs:
   build-and-test:
