@@ -8,8 +8,6 @@
 - [Workflow Overview](#workflow-overview)
 - [Testing](#testing)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Introduction
 This project automates the testing and deployment of Apache Airflow DAGs using GitHub Actions. It ensures that DAGs are automatically tested for errors before they are deployed to an Airflow environment, enhancing reliability and efficiency in managing workflows.
