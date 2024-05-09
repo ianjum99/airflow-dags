@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow
+  template:
+    metadata:
+      labels:
+        app: airflow
+    spec:
+      containers:
+      - name: airflow-webserver
+        image: apache/airflow:2.3.0
+        env:
+        - name: AIRFLOW__CORE__SQL_ALCHEMY_CONN
+          value: postgresql+psycopg2://airflow:airflow@postgres/airflow
+        - name: AIRFLOW__CORE__LOAD_EXAMPLES
+          value: 'False'
+        volumeMounts:
+        - name: dags
+          mountPath: /opt/airflow/dags
+      - name: git-sync
+        image: k8s.gcr.io/git-sync:v3.1.5
+        volumeMounts:
+        - name: dags
+          mountPath: /opt/airflow/dags
+        env:
+        - name: GIT_SYNC_REPO
+          value: "https://github.com/your-repo-url.git" # enter required repo here
+        - name: GIT_SYNC_BRANCH
+          value: "main"
+        - name: GIT_SYNC_WAIT
+          value: "30"  # Time in seconds between syncs
+        - name: GIT_SYNC_DEPTH
+          value: "1"
+      volumes:
+      - name: dags
+        emptyDir: {}
